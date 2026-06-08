@@ -10,7 +10,14 @@
         {
           "id": "album-covers",
           "title": "Album covers",
-          "items": []
+          "items": [
+            {
+              "title": "sd",
+              "img": "images/art/1780911059390_749cfe6f-bfae-4c80-84af-8ea8480ff90a.jpg",
+              "desc": "fsf",
+              "id": "item_1780911061884"
+            }
+          ]
         },
         {
           "id": "illustration",
