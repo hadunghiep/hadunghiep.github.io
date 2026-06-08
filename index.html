@@ -1,1 +1,268 @@
-hello
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HIEPICTURE</title>
+<style>
+  /* === 1. CSS: GIAO DIỆN & MÀU SẮC TỐI GIẢN === */
+  :root {
+    --bg-color: #2b2b2b;
+    --box-bg: #6e6e6e;
+    --box-hover: #888;
+    --text-color: #a0a0a0;
+    --text-active: #ffffff;
+    --border-color: #444;
+    --font-main: "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: var(--bg-color); color: var(--text-color);
+    font-family: var(--font-main);
+    display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+  }
+  a { text-decoration: none; color: inherit; cursor: pointer; transition: color 0.2s; }
+  a:hover, a.active { color: var(--text-active); }
+  
+  /* Thanh Menu Phải Trên Cùng */
+  header {
+    display: flex; justify-content: flex-end; padding: 30px 40px;
+    font-size: 13px; letter-spacing: 1px; position: absolute; top: 0; right: 0; width: 100%; z-index: 10;
+  }
+  .top-nav { display: flex; gap: 10px; text-transform: uppercase; }
+  .top-nav span { color: var(--border-color); }
+  
+  /* Bố cục chia 2 cột */
+  .layout { display: flex; flex: 1; margin-top: 80px; height: calc(100vh - 80px); }
+  
+  /* Cột Trái (Sidebar) */
+  aside {
+    width: 260px; border-right: 1px solid var(--border-color);
+    padding: 0 20px 40px 40px; overflow-y: auto; display: flex; flex-direction: column;
+  }
+  .home-link { font-size: 14px; text-transform: uppercase; margin-bottom: 30px; color: var(--text-color); }
+  .sidebar-menu { list-style: none; font-size: 14px; line-height: 2.2; }
+  .sub-menu { list-style: none; padding-left: 15px; font-size: 13px; }
+  .sub-menu li { position: relative; }
+  .sub-menu li::before { content: "• "; position: absolute; left: -12px; color: var(--text-color); }
+  
+  /* Cột Phải (Nội dung) */
+  main {
+    flex: 1; display: flex; flex-direction: column;
+    padding: 0 40px 0 40px; position: relative; overflow-y: auto;
+  }
+  .content-area { flex: 1; display: flex; flex-direction: column; padding-bottom: 20px;}
+  
+  /* Home View */
+  .home-view { margin-top: 5vh; max-width: 600px; }
+  .home-title { font-size: 40px; font-weight: normal; color: var(--text-active); margin-bottom: 25px; letter-spacing: 2px;}
+  .home-text { font-size: 16px; line-height: 1.6; white-space: pre-line; }
+  
+  /* Khung Lưới Tranh (Grid) */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; align-content: start; }
+  .grid-box {
+    background-color: var(--box-bg); aspect-ratio: 4/3;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden; cursor: pointer; transition: 0.2s;
+  }
+  .grid-box:hover { background-color: var(--box-hover); }
+  .grid-box span { color: var(--text-active); font-size: 14px; z-index: 2; text-align: center; padding: 10px; }
+  .grid-box img {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover; opacity: 0.7; transition: 0.3s;
+  }
+  .grid-box:hover img { opacity: 1; transform: scale(1.02); }
+  .bottom-desc { padding: 20px 0; border-top: 1px solid var(--border-color); font-size: 13px; min-height: 60px; }
+  
+  /* Trang Bio Layout */
+  .bio-layout { display: flex; gap: 40px; height: 100%; }
+  .bio-image { width: 300px; flex-shrink: 0; }
+  .bio-image img { width: 100%; height: auto; display: block; filter: grayscale(100%); }
+  .bio-details { flex: 1; font-size: 13px; line-height: 1.6; overflow-y: auto; padding-right: 20px; }
+  .bio-contact { margin-bottom: 30px; }
+  .bio-contact p { margin-bottom: 5px; }
+  .bio-contact span { color: var(--text-active); display: block; margin-bottom: 15px; }
+  .bio-section { margin-bottom: 25px; }
+  .bio-section h3 { color: var(--text-active); font-size: 15px; font-weight: normal; margin-bottom: 8px; }
+  .bio-section p { white-space: pre-line; }
+  
+  /* Cửa sổ Modal Phóng To Tranh (Lightbox) */
+  .lightbox {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(30, 30, 30, 0.95); display: none; z-index: 1000; align-items: center; justify-content: center;
+  }
+  .lightbox.active { display: flex; }
+  .lb-content { width: 85vw; height: 85vh; display: flex; position: relative; }
+  .lb-img-container { flex: 2; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .lb-img-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .lb-text-container { flex: 1; padding: 40px 20px 40px 40px; overflow-y: auto; }
+  .lb-title { color: var(--text-active); font-size: 18px; font-weight: normal; margin-bottom: 15px; }
+  .lb-desc { font-size: 14px; line-height: 1.6; white-space: pre-line; }
+  .lb-close-wrapper {
+    position: absolute; bottom: 20px; right: 40px; font-size: 24px; cursor: pointer; color: var(--text-color);
+  }
+  .lb-close-wrapper:hover { color: var(--text-active); }
+  
+  /* Scrollbar tàng hình */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-color); }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="top-nav">
+    <a href="#/art" data-nav="art">ART</a> <span>|</span>
+    <a href="#/design" data-nav="design">DESIGN</a> <span>|</span>
+    <a href="#/play" data-nav="play">PLAY</a> <span>|</span>
+    <a href="#/blog" data-nav="blog">BLOG</a> <span>|</span>
+    <a href="#/bio" data-nav="bio">Bio & Contact</a>
+  </nav>
+</header>
+
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <main>
+    <div class="content-area" id="content-area"></div>
+    <div class="bottom-desc" id="bottom-desc" style="display: none;"></div>
+  </main>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <div class="lb-content">
+    <div class="lb-img-container"><img src="" id="lb-img" alt=""></div>
+    <div class="lb-text-container">
+      <div class="lb-title" id="lb-title"></div>
+      <div class="lb-desc" id="lb-desc"></div>
+      <div class="lb-close-wrapper" onclick="closeLightbox()">X</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* === 2. JAVASCRIPT: BỘ MÁY XỬ LÝ DỮ LIỆU JSON === */
+  let siteData = null;
+  
+  async function init() {
+    try {
+      const response = await fetch('data.json');
+      if (!response.ok) throw new Error("Local fetching failed");
+      siteData = await response.json();
+      window.addEventListener('hashchange', router);
+      if (!window.location.hash) window.location.hash = '#/home'; else router();
+    } catch (e) {
+      document.getElementById('content-area').innerHTML = `
+        <div style="color: #ffaa00; font-size: 15px; margin-top: 50px;">
+          <b>Lưu ý:</b> Trình duyệt web đã chặn mã Javascript đọc file <code>data.json</code> nếu bạn đang mở file này từ ổ cứng máy tính (Lý do bảo mật CORS).<br><br>
+          Bạn cần làm theo bước Đẩy Code lên GitHub Pages, web sẽ tự động chạy hoàn hảo!
+        </div>`;
+    }
+  }
+
+  function router() {
+    const hash = window.location.hash.substring(2); 
+    const parts = hash.split('/');
+    const section = parts[0] || 'home';
+    const album = parts[1] || null;
+    const sub = parts[2] || null;
+    
+    // Cập nhật gạch chân Menu
+    document.querySelectorAll('.top-nav a').forEach(a => {
+      a.classList.remove('active');
+      if (a.getAttribute('data-nav') === section) a.classList.add('active');
+    });
+    
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('content-area');
+    const bottomDesc = document.getElementById('bottom-desc');
+    
+    sidebar.innerHTML = ''; content.innerHTML = ''; bottomDesc.style.display = 'none'; bottomDesc.innerHTML = '';
+    
+    if (section === 'home') renderHome(content);
+    else if (section === 'bio') { sidebar.innerHTML = `<a href="#/home" class="home-link">HOME</a>`; renderBio(content); }
+    else if (section === 'blog') { sidebar.innerHTML = `<a href="#/home" class="home-link">HOME</a>`; content.innerHTML = `<div class="home-view"><div class="home-text">Blog is coming soon.</div></div>`; }
+    else if (siteData.sections[section]) renderSection(section, album, sub, sidebar, content, bottomDesc);
+  }
+  
+  function renderHome(container) {
+    container.innerHTML = `<div class="home-view"><h1 class="home-title">${siteData.home.title}</h1><div class="home-text">${siteData.home.description}</div></div>`;
+  }
+  
+  function renderBio(container) {
+    const bio = siteData.bio;
+    let sectionsHtml = bio.sections.map(sec => `<div class="bio-section"><h3>${sec.title}</h3><p>${sec.content}</p></div>`).join('');
+    container.innerHTML = `
+      <div class="bio-layout">
+        <div class="bio-image"><img src="${bio.image}" alt="Portrait"></div>
+        <div class="bio-details">
+          <div class="bio-contact"><p>EMAIL:</p><span>${bio.email}</span><p>PHONE:</p><span>${bio.phone}</span></div>
+          ${sectionsHtml}
+        </div>
+      </div>`;
+  }
+  
+  function renderSection(secId, albumId, subId, sidebar, content, bottomDesc) {
+    const data = siteData.sections[secId];
+    
+    // Render Cột trái Sidebar
+    let sidebarHtml = `<a href="#/home" class="home-link">HOME</a><ul class="sidebar-menu">`;
+    data.albums.forEach(a => {
+      const isAlbumActive = a.id === albumId;
+      sidebarHtml += `<li><a href="#/${secId}/${a.id}" class="${isAlbumActive ? 'active' : ''}">${a.title}</a>`;
+      if (isAlbumActive && a.sub_albums) {
+        sidebarHtml += `<ul class="sub-menu">`;
+        a.sub_albums.forEach(s => { sidebarHtml += `<li><a href="#/${secId}/${a.id}/${s.id}" class="${s.id === subId ? 'active' : ''}">${s.title}</a></li>`; });
+        sidebarHtml += `</ul>`;
+      }
+      sidebarHtml += `</li>`;
+    });
+    sidebarHtml += `</ul>`;
+    sidebar.innerHTML = sidebarHtml;
+    
+    // Render Lưới Grid bên phải
+    bottomDesc.style.display = 'block';
+    let gridHtml = `<div class="grid">`;
+    let descText = data.desc;
+    
+    if (!albumId) {
+      data.albums.forEach(a => { gridHtml += `<a href="#/${secId}/${a.id}" class="grid-box"><span>${a.title}</span></a>`; });
+    } else {
+      const album = data.albums.find(a => a.id === albumId);
+      if (album) {
+        if (!subId && album.sub_albums && album.sub_albums.length > 0) {
+          album.sub_albums.forEach(s => { gridHtml += `<a href="#/${secId}/${album.id}/${s.id}" class="grid-box"><span>${s.title}</span></a>`; });
+          descText = album.desc || "Short description when enter each album.";
+        } else {
+          let items = [];
+          if (subId && album.sub_albums) {
+            const sub = album.sub_albums.find(s => s.id === subId);
+            items = sub ? (sub.items || []) : []; descText = album.desc || "Short description when enter each album.";
+          } else {
+            items = album.items || []; descText = album.desc || "Short description when enter each album.";
+          }
+          items.forEach((item, idx) => {
+            const safeObj = encodeURIComponent(JSON.stringify(item));
+            gridHtml += `<div class="grid-box" onclick="openLightbox('${safeObj}')">${item.img ? `<img src="${item.img}" alt="">` : ''}<span>${item.img ? '' : item.title}</span></div>`;
+          });
+        }
+      }
+    }
+    gridHtml += `</div>`;
+    content.innerHTML = gridHtml;
+    bottomDesc.innerHTML = descText;
+  }
+  
+  function openLightbox(encodedObj) {
+    const item = JSON.parse(decodeURIComponent(encodedObj));
+    document.getElementById('lb-img').src = item.img || '';
+    document.getElementById('lb-title').innerText = item.title || '';
+    document.getElementById('lb-desc').innerText = item.desc || '';
+    document.getElementById('lightbox').classList.add('active');
+  }
+  
+  function closeLightbox() { document.getElementById('lightbox').classList.remove('active'); }
+  window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
