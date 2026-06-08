@@ -1,0 +1,88 @@
+{
+  "home": {
+    "title": "HIEPICTURE",
+    "description": "Working extensively in both the\nfields of art & design since 90s.\nVersatile but strict eyes will help\nyou stay away from mediocrity"
+  },
+  "sections": {
+    "art": {
+      "desc": "Short description about all albums above in Art menu",
+      "albums": [
+        { "id": "album-covers", "title": "Album covers", "items": [] },
+        {
+          "id": "illustration",
+          "title": "Illustration",
+          "desc": "Short description when enter each album. Navigation buttons appear depends on page fullfilment.",
+          "sub_albums": [
+            {
+              "id": "tu-thuc",
+              "title": "Từ Thức fairy tales",
+              "items": [
+                {
+                  "img": "https://images.unsplash.com/photo-1549490349-8643362247b5?w=800&q=80",
+                  "title": "Artwork name",
+                  "desc": "Description of single artwork when clicked and zoomed in detailly. Description of single artwork when clicked and zoomed in detailly."
+                }
+              ]
+            },
+            { "id": "kafka", "title": "Metamorphosis (F.Kafka)", "items": [] },
+            { "id": "trung-nguyen", "title": "Trung Nguyên epic", "items": [] },
+            { "id": "others", "title": "Others", "items": [] }
+          ]
+        },
+        { "id": "digital-fantasy", "title": "Digital fantasy", "items": [] },
+        { "id": "goats-horses", "title": "Goats & horses", "items": [] },
+        { "id": "concepts", "title": "Concepts", "items": [] }
+      ]
+    },
+    "design": {
+      "desc": "Short description about all albums above in Design menu",
+      "albums": [
+        {
+          "id": "logo",
+          "title": "Logo/Emblem/Heraldry",
+          "sub_albums": [
+            { "id": "case-studies", "title": "Case studies", "items": [] },
+            { "id": "dao-toc", "title": "Dao Toc emblem", "items": [] },
+            { "id": "thuong-tra", "title": "Thuong Tra logo", "items": [] },
+            { "id": "visual-system", "title": "Visual system", "items": [] }
+          ]
+        },
+        { "id": "fb", "title": "F&B, Organic", "items": [] },
+        { "id": "education", "title": "Education", "items": [] },
+        { "id": "tech", "title": "Tech/Works", "items": [] },
+        { "id": "entertainment", "title": "Entertainment", "items": [] },
+        { "id": "others", "title": "Others", "items": [] },
+        { "id": "posters", "title": "Posters", "items": [] },
+        { "id": "publishing", "title": "Publishing", "items": [] }
+      ]
+    },
+    "play": {
+      "desc": "Short description about all albums above in Play menu",
+      "albums": [
+        { "id": "river-phoenix", "title": "River Phoenix", "items": [] },
+        { "id": "typography", "title": "Typography & Lettering", "items": [] },
+        { "id": "concepts", "title": "Concepts", "items": [] },
+        { "id": "others", "title": "Others", "items": [] }
+      ]
+    }
+  },
+  "bio": {
+    "image": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&q=80",
+    "email": "hadunghiep@gmail.com",
+    "phone": "0983 111 480",
+    "sections": [
+      {
+        "title": "Occupation",
+        "content": "2010-now. Independent consultant/advisor/trainer in image solution for VTVs, VTC-Intecom, VinEdu/Mation/Retail, TienphongBank, Hyperlogy, Niteco, Victorymedia.\n2010-now: Assuming the title of Academic Head at FPT-Arena\n2012: Guest lecturer at the London College for Fashion Studies and Keuka Program - ISVNU;\n2008-2010: Founding lecturer at Omega - the first experimental school for design in Hanoi."
+      },
+      {
+        "title": "Logo & branding",
+        "content": "One of very few designers who directs logo design at both best cost saving in production/application and catching customers at highest effectiveness based on modern material visual method.\nPrioritize the importance of key visual systematically, which helps strangly recognizing the brand even without the logo.\nExtensive art/culture foundation is a big advantage in high-class and not-easy-to-do logos."
+      },
+      {
+        "title": "Arts & Design",
+        "content": "2014-2018: Top 1% badges and top 5% most viewed portfolios on CGSociety - one of the most professional world-class computer art communities.\n2014: Winner in Graphics and Visual Communication Design Category - \"A' Prime\" International Design Award - Como Italy."
+      }
+    ]
+  }
+}
