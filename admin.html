@@ -3,234 +3,319 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HIEPICTURE - CMS Backend</title>
+<title>HIEPICTURE - Tự động hóa CMS</title>
 <style>
-  :root {
-    --bg-color: #1e1e1e;
-    --card-bg: #2d2d2d;
-    --border-color: #444;
-    --text-color: #a0a0a0;
-    --text-active: #ffffff;
-    --accent-color: #4caf50;
-    --font-main: "Helvetica Neue", Arial, sans-serif;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background-color: var(--bg-color); color: var(--text-color);
-    font-family: var(--font-main); padding: 40px; display: flex; justify-content: center;
-  }
+  :root { --bg-color: #1e1e1e; --card-bg: #2d2d2d; --border-color: #444; --text-color: #a0a0a0; --text-active: #ffffff; --accent-color: #4caf50; --danger-color: #f44336; }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Helvetica Neue", Arial, sans-serif; }
+  body { background-color: var(--bg-color); color: var(--text-color); padding: 20px; }
   
-  /* Khung Đăng Nhập */
-  .login-overlay {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-color);
-    display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000;
-  }
-  .login-box { background: var(--card-bg); padding: 40px; border-radius: 4px; border: 1px solid var(--border-color); text-align: center;}
-  .login-box h2 { color: var(--text-active); margin-bottom: 20px; font-weight: normal; font-size: 20px; }
+  /* Layout */
+  .login-overlay { position: fixed; inset: 0; background: var(--bg-color); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+  .login-box { background: var(--card-bg); padding: 40px; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; width: 400px; }
+  .dashboard { display: none; max-width: 1200px; margin: 0 auto; gap: 30px; }
+  .col-form { flex: 1; background: var(--card-bg); padding: 30px; border: 1px solid var(--border-color); height: fit-content; }
+  .col-list { flex: 1; background: var(--card-bg); padding: 30px; border: 1px solid var(--border-color); }
   
-  /* Khung Backend Main */
-  .container { width: 100%; max-width: 700px; background: var(--card-bg); padding: 40px; border: 1px solid var(--border-color); display: none; }
-  h1 { color: var(--text-active); font-size: 24px; font-weight: normal; margin-bottom: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+  h1, h2 { color: var(--text-active); font-weight: normal; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+  .form-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
+  label { font-size: 12px; color: var(--text-active); text-transform: uppercase; }
+  input, select, textarea { background: #121212; border: 1px solid var(--border-color); padding: 10px; color: var(--text-active); font-size: 14px; width: 100%; }
+  button { background: var(--accent-color); color: white; border: none; padding: 12px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
+  button:disabled { background: #555; cursor: not-allowed; }
+  button.btn-danger { background: var(--danger-color); width: auto; padding: 6px 12px; font-size: 12px; margin: 0; }
   
-  .form-group { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
-  label { font-size: 13px; color: var(--text-active); text-transform: uppercase; letter-spacing: 1px; }
-  input, select, textarea {
-    background: #121212; border: 1px solid var(--border-color); padding: 12px;
-    color: var(--text-active); font-size: 14px; font-family: inherit; width: 100%;
-  }
-  input:focus, select:focus, textarea:focus { border-color: #666; outline: none; }
+  /* List items */
+  .item-list { display: flex; flex-direction: column; gap: 10px; max-height: 600px; overflow-y: auto; }
+  .item-row { display: flex; align-items: center; justify-content: space-between; background: #121212; padding: 10px; border: 1px solid var(--border-color); }
+  .item-row img { width: 50px; height: 50px; object-fit: cover; margin-right: 15px; border: 1px solid #444; }
+  .item-info { flex: 1; }
+  .item-title { color: var(--text-active); font-size: 14px; font-weight: bold; }
+  .item-path { font-size: 11px; color: #888; }
   
-  button {
-    background: var(--accent-color); color: white; border: none; padding: 14px 20px;
-    font-size: 14px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s;
-  }
-  button:hover { opacity: 0.9; }
-  
-  .json-preview {
-    margin-top: 30px; background: #121212; padding: 15px; font-family: monospace;
-    font-size: 12px; max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color);
-  }
-  .status-msg { margin-top: 15px; color: #ffaa00; font-size: 13px; text-align: center; }
+  #loader { display: none; color: #ffaa00; text-align: center; margin-top: 15px; font-size: 14px; font-weight: bold; }
 </style>
 </head>
 <body>
 
-<!-- MÀN HÌNH ĐĂNG NHẬP -->
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
-    <h2>HIEPICTURE BACKEND</h2>
-    <input type="password" id="passInput" placeholder="Nhập mật khẩu vào cổng..." style="text-align: center; margin-bottom: 15px;">
-    <button onclick="checkPassword()" style="background: #444;">ĐĂNG NHẬP</button>
-    <div id="loginError" style="color: red; margin-top: 10px; font-size: 13px;"></div>
+    <h2 style="border:none">KẾT NỐI HỆ THỐNG</h2>
+    <p style="font-size: 13px; margin-bottom: 20px;">Nhập GitHub Personal Access Token của bạn để quản lý trực tiếp.</p>
+    <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxx" style="text-align: center; margin-bottom: 15px;">
+    <button onclick="login()">KẾT NỐI API</button>
   </div>
 </div>
 
-<!-- GIAO DIỆN QUẢN TRỊ CHÍNH -->
-<div class="container" id="mainContainer">
-  <h1>THÊM TÁC PHẨM MỚI</h1>
-  
-  <div class="form-group">
-    <label>1. Chọn Menu Chính</label>
-    <select id="secSelect" onchange="updateAlbumDropdown()">
-      <option value="">-- Chọn danh mục --</option>
-      <option value="art">ART</option>
-      <option value="design">DESIGN</option>
-      <option value="play">PLAY</option>
-    </select>
+<div class="dashboard" id="dashboard" style="display: flex;">
+  <div class="col-form">
+    <h1>THÊM TÁC PHẨM MỚI</h1>
+    <div class="form-group">
+      <label>1. Chọn Danh mục chính</label>
+      <select id="secSelect" onchange="updateDropdowns()"><option value="">-- Chọn --</option><option value="art">ART</option><option value="design">DESIGN</option><option value="play">PLAY</option></select>
+    </div>
+    <div class="form-group">
+      <label>2. Chọn Album</label>
+      <select id="albumSelect" onchange="updateDropdowns()"><option value="">-- Chọn --</option></select>
+    </div>
+    <div class="form-group" id="subAlbumGroup" style="display: none;">
+      <label>3. Chọn Tiểu mục</label>
+      <select id="subAlbumSelect"><option value="">-- Chọn --</option></select>
+    </div>
+    <div class="form-group">
+      <label>4. Upload File Ảnh (Hệ thống tự đẩy lên Github)</label>
+      <input type="file" id="fileInput" accept="image/*">
+    </div>
+    <div class="form-group">
+      <label>5. Tên tác phẩm</label>
+      <input type="text" id="artTitle" placeholder="Ví dụ: Logo Mơ Hoa">
+    </div>
+    <div class="form-group">
+      <label>6. Mô tả chi tiết</label>
+      <textarea id="artDesc" rows="3" placeholder="Ghi chú về thiết kế..."></textarea>
+    </div>
+    <button id="btnSubmit" onclick="processUpload()">ĐĂNG TÁC PHẨM & CẬP NHẬT WEB</button>
+    <div id="loader">Đang xử lý tải ảnh và lưu hệ thống. Vui lòng không đóng web...</div>
   </div>
 
-  <div class="form-group">
-    <label>2. Chọn Album</label>
-    <select id="albumSelect" onchange="updateSubAlbumDropdown()">
-      <option value="">-- Chọn Album --</option>
-    </select>
-  </div>
-
-  <div class="form-group" id="subAlbumGroup" style="display: none;">
-    <label>3. Chọn Sub-Album (Tiểu mục nhỏ)</label>
-    <select id="subAlbumSelect">
-      <option value="">-- Chọn tiểu mục --</option>
-    </select>
-  </div>
-
-  <div class="form-group">
-    <label>4. Tên tác phẩm (Artwork Name)</label>
-    <input type="text" id="artTitle" placeholder="Ví dụ: Bức tranh Từ Thức 1">
-  </div>
-
-  <div class="form-group">
-    <label>5. Đường dẫn file ảnh (Image Path/URL)</label>
-    <input type="text" id="artImg" placeholder="Ví dụ: images/art/tuthuc-1.jpg">
-    <span style="font-size: 11px; color: #666;">*Hãy copy file ảnh thật vào kho Github trước, rồi điền đúng tên đường dẫn file vào đây.</span>
-  </div>
-
-  <div class="form-group">
-    <label>6. Mô tả chi tiết (Description)</label>
-    <textarea id="artDesc" rows="4" placeholder="Mô tả chi tiết khi click phóng to tranh..."></textarea>
-  </div>
-
-  <button onclick="addItemAndDownload()">CẬP NHẬT & TẢI FILE DATA.JSON MỚI</button>
-  
-  <div class="status-msg" id="statusMsg"></div>
-  
-  <div style="margin-top: 30px;">
-    <label>Xem trước cấu trúc file dữ liệu mới:</label>
-    <div class="json-preview" id="jsonPreview">Dữ liệu trống...</div>
+  <div class="col-list">
+    <h1>QUẢN LÝ TÁC PHẨM (XÓA)</h1>
+    <div class="form-group">
+      <select id="filterSec" onchange="renderList()">
+        <option value="art">Lọc theo: ART</option>
+        <option value="design">Lọc theo: DESIGN</option>
+        <option value="play">Lọc theo: PLAY</option>
+      </select>
+    </div>
+    <div class="item-list" id="itemList"></div>
   </div>
 </div>
 
 <script>
+  // Cấu hình cố định
+  const GITHUB_OWNER = "hadunghiep";
+  const GITHUB_REPO = "hadunghiep.github.io";
+  
+  let token = localStorage.getItem('ghToken') || '';
   let siteData = null;
+  let fileSha = null; // Cần thiết để ghi đè file data.json
 
-  // 1. Kiểm tra mật khẩu mã nguồn tĩnh
-  function checkPassword() {
-    const pass = document.getElementById('passInput').value;
-    if (pass === '0101') {
-      document.getElementById('loginOverlay').style.display = 'none';
-      document.getElementById('mainContainer').style.display = 'block';
-      fetchCurrentData();
-    } else {
-      document.getElementById('loginError').innerText = 'Sai mật khẩu!';
-    }
-  }
+  // Khởi động
+  if(token) { document.getElementById('ghToken').value = token; }
 
-  // 2. Lấy dữ liệu json hiện tại trên server về máy để xử lý tiếp
-  async function fetchCurrentData() {
-    try {
-      const response = await fetch('data.json');
-      siteData = await response.json();
-      document.getElementById('jsonPreview').innerText = JSON.stringify(siteData, null, 2);
-    } catch (e) {
-      document.getElementById('statusMsg').innerText = "Lỗi: Không tìm thấy file data.json để đọc cấu trúc!";
-    }
-  }
-
-  // 3. Tự động đổi danh sách Album theo danh mục chính
-  function updateAlbumDropdown() {
-    const sec = document.getElementById('secSelect').value;
-    const albumSelect = document.getElementById('albumSelect');
-    const subGroup = document.getElementById('subAlbumGroup');
+  // 1. Hàm Đăng Nhập & Lấy Dữ Liệu
+  async function login() {
+    const inputToken = document.getElementById('ghToken').value.trim();
+    if(!inputToken) return alert("Vui lòng nhập Token!");
+    token = inputToken;
     
-    albumSelect.innerHTML = '<option value="">-- Chọn Album --</option>';
-    subGroup.style.display = 'none';
+    document.getElementById('btnSubmit').innerText = "Đang kết nối...";
+    try {
+      // Gọi API lấy file data.json để lấy nội dung và mã SHA (bắt buộc khi update)
+      const res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data.json`, {
+        headers: { "Authorization": `token ${token}` }
+      });
+      if(!res.ok) throw new Error("Sai Token hoặc không tìm thấy data.json");
+      
+      const dataJsonFile = await res.json();
+      fileSha = dataJsonFile.sha; // Lưu SHA để dành cho lúc ghi đè
+      
+      // Nội dung trả về bị mã hóa base64, cần giải mã
+      const decodedContent = decodeURIComponent(escape(atob(dataJsonFile.content)));
+      siteData = JSON.parse(decodedContent);
+      
+      localStorage.setItem('ghToken', token); // Lưu vào máy tính
+      document.getElementById('loginOverlay').style.display = 'none';
+      document.getElementById('btnSubmit').innerText = "ĐĂNG TÁC PHẨM & CẬP NHẬT WEB";
+      
+      updateDropdowns();
+      renderList();
+    } catch(err) {
+      alert("Lỗi kết nối: " + err.message);
+      document.getElementById('btnSubmit').innerText = "KẾT NỐI API";
+    }
+  }
+
+  // 2. Cập nhật Dropdown chọn mục
+  function updateDropdowns() {
+    const sec = document.getElementById('secSelect').value;
+    const albumSel = document.getElementById('albumSelect');
+    const subGrp = document.getElementById('subAlbumGroup');
+    const subSel = document.getElementById('subAlbumSelect');
+    
+    // Giữ nguyên giá trị đã chọn nếu có thể
+    const currentAlbum = albumSel.value;
+    albumSel.innerHTML = '<option value="">-- Chọn Album --</option>';
+    subGrp.style.display = 'none'; subSel.innerHTML = '<option value="">-- Chọn --</option>';
     
     if(!sec || !siteData) return;
-    
-    siteData.sections[sec].albums.forEach(a => {
-      albumSelect.innerHTML += `<option value="${a.id}">${a.title}</option>`;
-    });
-  }
+    siteData.sections[sec].albums.forEach(a => albumSel.innerHTML += `<option value="${a.id}">${a.title}</option>`);
+    albumSel.value = currentAlbum || "";
 
-  // 4. Tự động đổi Sub-Album nếu Album đó có chia mục nhỏ hơn (như Illustration)
-  function updateSubAlbumDropdown() {
-    const sec = document.getElementById('secSelect').value;
-    const albumId = document.getElementById('albumSelect').value;
-    const subGroup = document.getElementById('subAlbumGroup');
-    const subSelect = document.getElementById('subAlbumSelect');
-    
-    subSelect.innerHTML = '<option value="">-- Chọn tiểu mục --</option>';
-    subGroup.style.display = 'none';
-    
-    if(!sec || !albumId) return;
-    
-    const album = siteData.sections[sec].albums.find(a => a.id === albumId);
-    if(album && album.sub_albums && album.sub_albums.length > 0) {
-      subGroup.style.display = 'flex';
-      album.sub_albums.forEach(s => {
-        subSelect.innerHTML += `<option value="${s.id}">${s.title}</option>`;
-      });
+    const aId = albumSel.value;
+    if(aId) {
+      const album = siteData.sections[sec].albums.find(a => a.id === aId);
+      if(album && album.sub_albums && album.sub_albums.length > 0) {
+        subGrp.style.display = 'block';
+        album.sub_albums.forEach(s => subSel.innerHTML += `<option value="${s.id}">${s.title}</option>`);
+      }
     }
   }
 
-  // 5. Xử lý chèn phần tử mới vào cấu trúc mảng JSON và kích hoạt Tải file về
-  function addItemAndDownload() {
+  // 3. Xử lý Upload Ảnh & Cập nhật JSON
+  async function processUpload() {
     const sec = document.getElementById('secSelect').value;
     const albumId = document.getElementById('albumSelect').value;
     const subId = document.getElementById('subAlbumSelect').value;
     const title = document.getElementById('artTitle').value;
-    const img = document.getElementById('artImg').value;
     const desc = document.getElementById('artDesc').value;
-    
-    if(!sec || !albumId || !title || !img) {
-      alert('Vui lòng điền đầy đủ các mục bắt buộc (Danh mục, Album, Tên tranh, File ảnh)!');
-      return;
+    const fileInput = document.getElementById('fileInput');
+
+    if(!sec || !albumId || !title || fileInput.files.length === 0) {
+      return alert("Vui lòng điền đủ Tên tác phẩm, Danh mục và chọn Ảnh!");
     }
-    
-    // Tạo object tranh mới
-    const newItem = { title, img, desc };
-    
-    // Tìm vị trí thích hợp để push vào dữ liệu cấu trúc
+
     const album = siteData.sections[sec].albums.find(a => a.id === albumId);
-    if (album) {
-      if (album.sub_albums && album.sub_albums.length > 0) {
-        if (!subId) { alert('Album này có tiểu mục nhỏ, vui lòng chọn tiểu mục!'); return; }
-        const sub = album.sub_albums.find(s => s.id === subId);
-        if(!sub.items) sub.items = [];
-        sub.items.push(newItem);
-      } else {
-        if(!album.items) album.items = [];
-        album.items.push(newItem);
-      }
+    let targetItemsArray;
+    if (album.sub_albums && album.sub_albums.length > 0) {
+      if(!subId) return alert("Vui lòng chọn Tiểu mục!");
+      const sub = album.sub_albums.find(s => s.id === subId);
+      if(!sub.items) sub.items = []; targetItemsArray = sub.items;
+    } else {
+      if(!album.items) album.items = []; targetItemsArray = album.items;
     }
+
+    const file = fileInput.files[0];
+    const reader = new FileReader();
     
-    // Cập nhật giao diện Preview xem trước
-    document.getElementById('jsonPreview').innerText = JSON.stringify(siteData, null, 2);
+    // Vô hiệu hóa nút bấm
+    document.getElementById('btnSubmit').disabled = true;
+    document.getElementById('loader').style.display = 'block';
+
+    reader.onload = async function(e) {
+      // Tách chuỗi base64 cốt lõi của ảnh
+      const base64Img = e.target.result.split(',')[1];
+      const safeFileName = Date.now() + "_" + file.name.replace(/\s+/g, '-');
+      const imagePath = `images/${sec}/${safeFileName}`;
+
+      try {
+        // GỌI API 1: Tải ảnh lên thư mục của Github
+        await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${imagePath}`, {
+          method: 'PUT',
+          headers: { "Authorization": `token ${token}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ message: `Upload image ${title}`, content: base64Img })
+        });
+
+        // Đẩy dữ liệu vào mảng JSON tại máy khách
+        targetItemsArray.push({ title: title, img: imagePath, desc: desc, id: "item_" + Date.now() });
+
+        // GỌI API 2: Ghi đè file data.json mới
+        await saveJsonToServer("Thêm tác phẩm mới: " + title);
+
+        alert("Thành công! Giao diện web sẽ cập nhật sau ~1 phút.");
+        
+        // Reset Form
+        document.getElementById('artTitle').value = '';
+        document.getElementById('artDesc').value = '';
+        fileInput.value = '';
+        renderList();
+        
+      } catch(err) {
+        alert("Lỗi tải lên: " + err.message);
+      } finally {
+        document.getElementById('btnSubmit').disabled = false;
+        document.getElementById('loader').style.display = 'none';
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // 4. Lưu cấu trúc JSON mới lên Server
+  async function saveJsonToServer(commitMessage) {
+    const updatedJsonStr = JSON.stringify(siteData, null, 2);
+    // Phải mã hóa base64 chuẩn unicode để tránh lỗi font tiếng Việt
+    const b64Json = btoa(unescape(encodeURIComponent(updatedJsonStr)));
     
-    // Tạo sự kiện tải file tự động từ trình duyệt xuống máy tính
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(siteData, null, 2));
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", "data.json");
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
+    const res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/data.json`, {
+      method: 'PUT',
+      headers: { "Authorization": `token ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ message: commitMessage, content: b64Json, sha: fileSha })
+    });
     
-    document.getElementById('statusMsg').innerHTML = "<b>Thành công!</b> File <code>data.json</code> mới đã được tải xuống máy tính của bạn.<br>Hãy kéo file này thả đè lên GitHub để cập nhật website.";
+    if(!res.ok) throw new Error("Không thể ghi file JSON");
+    const result = await res.json();
+    fileSha = result.content.sha; // Cập nhật SHA mới cho những lần sửa tiếp theo
+  }
+
+  // 5. Hiển thị danh sách & Xóa tác phẩm
+  function renderList() {
+    const listDiv = document.getElementById('itemList');
+    const filterSec = document.getElementById('filterSec').value;
+    listDiv.innerHTML = '';
     
-    // Reset form nhập liệu
-    document.getElementById('artTitle').value = '';
-    document.getElementById('artImg').value = '';
-    document.getElementById('artDesc').value = '';
+    if(!siteData) return;
+    
+    const secData = siteData.sections[filterSec];
+    secData.albums.forEach(album => {
+      let arraysToMap = [];
+      if(album.sub_albums && album.sub_albums.length > 0) {
+        album.sub_albums.forEach(sub => arraysToMap.push({ path: `${album.title} > ${sub.title}`, arr: sub.items || [] }));
+      } else {
+        arraysToMap.push({ path: album.title, arr: album.items || [] });
+      }
+      
+      arraysToMap.forEach(group => {
+        group.arr.forEach((item, index) => {
+          // Thêm ID tạm thời nếu chưa có để dễ quản lý xóa
+          if(!item.id) item.id = "old_" + Math.random().toString(36).substr(2, 9);
+          
+          listDiv.innerHTML += `
+            <div class="item-row" id="${item.id}">
+              <img src="${item.img && !item.img.startsWith('http') ? '/' + item.img : item.img}" onerror="this.src='https://via.placeholder.com/50'">
+              <div class="item-info">
+                <div class="item-title">${item.title}</div>
+                <div class="item-path">${group.path}</div>
+              </div>
+              <button class="btn-danger" onclick="deleteItem('${filterSec}', '${item.id}')">Xóa</button>
+            </div>
+          `;
+        });
+      });
+    });
+  }
+
+  // 6. Logic Xóa phần tử khỏi hệ thống
+  async function deleteItem(secId, itemId) {
+    if(!confirm("Bạn có chắc muốn xóa tác phẩm này khỏi Website?")) return;
+    
+    document.getElementById(itemId).style.opacity = '0.5';
+    let itemFound = false;
+    
+    // Quét tìm và xóa khỏi Object
+    siteData.sections[secId].albums.forEach(album => {
+      if(album.sub_albums && album.sub_albums.length > 0) {
+        album.sub_albums.forEach(sub => {
+          if(sub.items) {
+            const idx = sub.items.findIndex(i => i.id === itemId);
+            if(idx > -1) { sub.items.splice(idx, 1); itemFound = true; }
+          }
+        });
+      } else {
+        if(album.items) {
+          const idx = album.items.findIndex(i => i.id === itemId);
+          if(idx > -1) { album.items.splice(idx, 1); itemFound = true; }
+        }
+      }
+    });
+    
+    if(itemFound) {
+      document.getElementById('loader').style.display = 'block';
+      document.getElementById('loader').innerText = 'Đang xóa dữ liệu trên Server...';
+      try {
+        await saveJsonToServer("Xóa tác phẩm ID: " + itemId);
+        renderList();
+      } catch(e) { alert("Lỗi khi xóa: " + e.message); }
+      finally { document.getElementById('loader').style.display = 'none'; }
+    }
   }
 </script>
 </body>
