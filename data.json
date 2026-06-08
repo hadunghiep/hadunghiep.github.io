@@ -7,7 +7,11 @@
     "art": {
       "desc": "Short description about all albums above in Art menu",
       "albums": [
-        { "id": "album-covers", "title": "Album covers", "items": [] },
+        {
+          "id": "album-covers",
+          "title": "Album covers",
+          "items": []
+        },
         {
           "id": "illustration",
           "title": "Illustration",
@@ -20,18 +24,43 @@
                 {
                   "img": "https://images.unsplash.com/photo-1549490349-8643362247b5?w=800&q=80",
                   "title": "Artwork name",
-                  "desc": "Description of single artwork when clicked and zoomed in detailly. Description of single artwork when clicked and zoomed in detailly."
+                  "desc": "Description of single artwork when clicked and zoomed in detailly. Description of single artwork when clicked and zoomed in detailly.",
+                  "id": "old_jy6ex6ri3"
                 }
               ]
             },
-            { "id": "kafka", "title": "Metamorphosis (F.Kafka)", "items": [] },
-            { "id": "trung-nguyen", "title": "Trung Nguyên epic", "items": [] },
-            { "id": "others", "title": "Others", "items": [] }
+            {
+              "id": "kafka",
+              "title": "Metamorphosis (F.Kafka)",
+              "items": []
+            },
+            {
+              "id": "trung-nguyen",
+              "title": "Trung Nguyên epic",
+              "items": []
+            },
+            {
+              "id": "others",
+              "title": "Others",
+              "items": []
+            }
           ]
         },
-        { "id": "digital-fantasy", "title": "Digital fantasy", "items": [] },
-        { "id": "goats-horses", "title": "Goats & horses", "items": [] },
-        { "id": "concepts", "title": "Concepts", "items": [] }
+        {
+          "id": "digital-fantasy",
+          "title": "Digital fantasy",
+          "items": []
+        },
+        {
+          "id": "goats-horses",
+          "title": "Goats & horses",
+          "items": []
+        },
+        {
+          "id": "concepts",
+          "title": "Concepts",
+          "items": []
+        }
       ]
     },
     "design": {
@@ -41,28 +70,95 @@
           "id": "logo",
           "title": "Logo/Emblem/Heraldry",
           "sub_albums": [
-            { "id": "case-studies", "title": "Case studies", "items": [] },
-            { "id": "dao-toc", "title": "Dao Toc emblem", "items": [] },
-            { "id": "thuong-tra", "title": "Thuong Tra logo", "items": [] },
-            { "id": "visual-system", "title": "Visual system", "items": [] }
+            {
+              "id": "case-studies",
+              "title": "Case studies",
+              "items": []
+            },
+            {
+              "id": "dao-toc",
+              "title": "Dao Toc emblem",
+              "items": []
+            },
+            {
+              "id": "thuong-tra",
+              "title": "Thuong Tra logo",
+              "items": [
+                {
+                  "title": "logo 0000",
+                  "img": "images/design/1780910913127_image.psd.jpg",
+                  "desc": "tac pham test",
+                  "id": "item_1780910915985"
+                }
+              ]
+            },
+            {
+              "id": "visual-system",
+              "title": "Visual system",
+              "items": []
+            }
           ]
         },
-        { "id": "fb", "title": "F&B, Organic", "items": [] },
-        { "id": "education", "title": "Education", "items": [] },
-        { "id": "tech", "title": "Tech/Works", "items": [] },
-        { "id": "entertainment", "title": "Entertainment", "items": [] },
-        { "id": "others", "title": "Others", "items": [] },
-        { "id": "posters", "title": "Posters", "items": [] },
-        { "id": "publishing", "title": "Publishing", "items": [] }
+        {
+          "id": "fb",
+          "title": "F&B, Organic",
+          "items": []
+        },
+        {
+          "id": "education",
+          "title": "Education",
+          "items": []
+        },
+        {
+          "id": "tech",
+          "title": "Tech/Works",
+          "items": []
+        },
+        {
+          "id": "entertainment",
+          "title": "Entertainment",
+          "items": []
+        },
+        {
+          "id": "others",
+          "title": "Others",
+          "items": []
+        },
+        {
+          "id": "posters",
+          "title": "Posters",
+          "items": []
+        },
+        {
+          "id": "publishing",
+          "title": "Publishing",
+          "items": []
+        }
       ]
     },
     "play": {
       "desc": "Short description about all albums above in Play menu",
       "albums": [
-        { "id": "river-phoenix", "title": "River Phoenix", "items": [] },
-        { "id": "typography", "title": "Typography & Lettering", "items": [] },
-        { "id": "concepts", "title": "Concepts", "items": [] },
-        { "id": "others", "title": "Others", "items": [] }
+        {
+          "id": "river-phoenix",
+          "title": "River Phoenix",
+          "items": []
+        },
+        {
+          "id": "typography",
+          "title": "Typography & Lettering",
+          "items": []
+        },
+        {
+          "id": "concepts",
+          "title": "Concepts",
+          "items": []
+        },
+        {
+          "id": "others",
+          "title": "Others",
+          "items": []
+        }
       ]
     }
   },
