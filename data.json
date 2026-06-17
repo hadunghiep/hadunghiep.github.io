@@ -96,14 +96,7 @@
             {
               "id": "thuong-tra",
               "title": "Thuong Tra logo",
-              "items": [
-                {
-                  "title": "logo 0000",
-                  "img": "images/design/1780910913127_image.psd.jpg",
-                  "desc": "tac pham test",
-                  "id": "item_1780910915985"
-                }
-              ]
+              "items": []
             },
             {
               "id": "visual-system",
